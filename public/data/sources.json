@@ -1,0 +1,88 @@
+{
+  "code": 200,
+  "status": "ok",
+  "result": {
+    "data": [
+      {
+        "source_name": "Le Temps",
+        "source_domain": "letemps.ch",
+        "trust_score": 80,
+        "trust_score_explanation": "Reliable newspaper with professional editorial standards, but still requires article-level verification.",
+        "validated_count": 126,
+        "invalidated_count": 18
+      },
+      {
+        "source_name": "Climate Home News",
+        "source_domain": "climatechangenews.com",
+        "trust_score": 88,
+        "trust_score_explanation": "Award-winning independent digital publication focused on the international politics of the climate crisis, with named authors and disclosed funding.\n\nCross-check individual claims against primary sources (IPCC reports, peer-reviewed studies) for high-stakes decisions.",
+        "validated_count": 12300,
+        "invalidated_count": 1830
+      },
+      {
+        "source_name": "The Guardian",
+        "source_domain": "theguardian.com",
+        "trust_score": 90,
+        "trust_score_explanation": "Long-established newspaper with a dedicated editorial code and corrections policy. Opinion content is clearly labelled and separated from news reporting.",
+        "validated_count": 0,
+        "invalidated_count": 0
+      },
+      {
+        "source_name": "BBC News",
+        "source_domain": "bbc.com",
+        "trust_score": 50,
+        "trust_score_explanation": "Public broadcaster with formal editorial standards, but headline framing and story selection have drawn criticism from multiple sides. Verify emotionally-charged headlines against the full article.",
+        "validated_count": 0,
+        "invalidated_count": 0
+      },
+      {
+        "source_name": "UN News",
+        "source_domain": "news.un.org",
+        "trust_score": 50,
+        "trust_score_explanation": "Official communications channel of the United Nations. Useful for institutional positions, but is not an independent news source and rarely covers criticism of the UN itself.",
+        "validated_count": 0,
+        "invalidated_count": 0
+      },
+      {
+        "source_name": "IPCC",
+        "source_domain": "ipcc.ch",
+        "trust_score": 90,
+        "trust_score_explanation": "The UN body responsible for assessing climate science. Reports go through an extensive multi-government and scientific review process.",
+        "validated_count": 0,
+        "invalidated_count": 0
+      },
+      {
+        "source_name": "Earth.Org",
+        "source_domain": "earth.org",
+        "trust_score": 20,
+        "trust_score_explanation": "Advocacy-oriented outlet with limited editorial transparency and unclear sourcing on several articles. Treat claims as a starting point, not a citation.",
+        "validated_count": 0,
+        "invalidated_count": 0
+      },
+      {
+        "source_name": "Reuters",
+        "source_domain": "reuters.com",
+        "trust_score": 92,
+        "trust_score_explanation": "International news agency known for rigorous sourcing and neutral, wire-service style reporting.",
+        "validated_count": 0,
+        "invalidated_count": 0
+      },
+      {
+        "source_name": "Breitbart",
+        "source_domain": "breitbart.com",
+        "trust_score": 35,
+        "trust_score_explanation": "Partisan outlet with a documented history of misleading headlines; claims require independent cross-verification.",
+        "validated_count": 0,
+        "invalidated_count": 0
+      },
+      {
+        "source_name": "The Onion",
+        "source_domain": "theonion.com",
+        "trust_score": 15,
+        "trust_score_explanation": "Satirical publication; content is intentionally fictional and should never be treated as factual reporting.",
+        "validated_count": 0,
+        "invalidated_count": 0
+      }
+    ]
+  }
+}

@@ -1,0 +1,206 @@
+@import "../styles/tokens.css";
+
+* {
+  box-sizing: border-box;
+}
+
+.decode-panel {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  bottom: 16px;
+  width: 380px;
+  max-width: calc(100vw - 32px);
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+  font-family: var(--decode-font);
+  color: var(--decode-ink);
+  z-index: 2147483647;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 20px 22px 24px;
+}
+
+.decode-slide-enter-active,
+.decode-slide-leave-active {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.decode-slide-enter-from,
+.decode-slide-leave-to {
+  transform: translateX(24px);
+  opacity: 0;
+}
+
+.decode-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.decode-panel__header h2 {
+  font-size: 16px;
+  margin: 0;
+}
+
+.decode-panel__close {
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--decode-grey);
+  cursor: pointer;
+  padding: 4px;
+}
+.decode-panel__close:hover {
+  color: var(--decode-ink);
+}
+
+.decode-panel__source {
+  margin-bottom: 16px;
+}
+
+.decode-panel__name {
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.decode-panel__domain {
+  font-size: 12px;
+  color: var(--decode-grey);
+  margin-top: 2px;
+  word-break: break-all;
+}
+
+.decode-panel__score-card {
+  background: var(--decode-grey-light);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.decode-panel__score {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.decode-panel__score-label {
+  font-size: 12px;
+  color: var(--decode-grey);
+  margin: 4px 0 10px;
+}
+
+.decode-panel__bar {
+  height: 6px;
+  border-radius: 3px;
+  background: #e0e0e0;
+  overflow: hidden;
+}
+
+.decode-panel__bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.2s ease;
+}
+.decode-panel__bar-fill.is-high {
+  background: var(--decode-high-solid);
+}
+.decode-panel__bar-fill.is-medium {
+  background: var(--decode-medium-solid);
+}
+.decode-panel__bar-fill.is-low {
+  background: var(--decode-low-solid);
+}
+.decode-panel__bar-fill.is-unknown {
+  background: var(--decode-unknown-text);
+}
+
+.decode-panel__section {
+  margin-bottom: 20px;
+}
+
+.decode-panel__section h3 {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--decode-grey);
+  margin: 0 0 8px;
+}
+
+.decode-panel__section p {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--decode-ink-soft);
+  margin: 0 0 10px;
+}
+.decode-panel__section p:last-child {
+  margin-bottom: 0;
+}
+
+.decode-panel__counts {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--decode-grey);
+  margin-bottom: 12px;
+}
+
+.decode-panel__vote-btn {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--decode-border);
+  background: var(--decode-grey-light);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+.decode-panel__vote-btn--agree {
+  background: var(--decode-high-bg);
+  color: var(--decode-high-text);
+  border-color: var(--decode-high-border);
+}
+.decode-panel__vote-btn--agree.is-active {
+  background: var(--decode-high-solid);
+  border-color: var(--decode-high-solid);
+  color: #ffffff;
+}
+
+.decode-panel__vote-btn--disagree {
+  background: var(--decode-low-bg);
+  color: var(--decode-low-text);
+  border-color: var(--decode-low-border);
+}
+.decode-panel__vote-btn--disagree.is-active {
+  background: var(--decode-low-solid);
+  border-color: var(--decode-low-solid);
+  color: #ffffff;
+}
+
+.decode-panel__divider {
+  border: none;
+  border-top: 1px solid var(--decode-border);
+  margin: 4px 0 16px;
+}
+
+.decode-panel__view-db {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--decode-border);
+  background: #ffffff;
+  color: var(--decode-ink-soft);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.decode-panel__view-db:hover {
+  background: var(--decode-grey-light);
+}

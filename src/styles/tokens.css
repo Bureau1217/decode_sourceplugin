@@ -1,0 +1,35 @@
+/*
+ * Shared design tokens. Declared on :host (for use inside the shadow DOM
+ * mounted by the content script) and :root (for the popup/options pages,
+ * which render as normal top-level documents).
+ */
+:host,
+:root {
+  --decode-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial,
+    sans-serif;
+
+  --decode-ink: #202124;
+  --decode-ink-soft: #3c4043;
+  --decode-grey: #5f6368;
+  --decode-grey-light: #f1f3f4;
+  --decode-border: #dadce0;
+
+  --decode-high-bg: #e6f4ea;
+  --decode-high-text: #137333;
+  --decode-high-border: #b7dfc3;
+  --decode-high-solid: #1e8e3e;
+
+  --decode-medium-bg: #fef7e0;
+  --decode-medium-text: #8a6d00;
+  --decode-medium-border: #f2dea4;
+  --decode-medium-solid: #f1a208;
+
+  --decode-low-bg: #fce8e6;
+  --decode-low-text: #c5221f;
+  --decode-low-border: #f3c2bf;
+  --decode-low-solid: #d93025;
+
+  --decode-unknown-bg: #f1f3f4;
+  --decode-unknown-text: #5f6368;
+  --decode-unknown-border: #dadce0;
+}

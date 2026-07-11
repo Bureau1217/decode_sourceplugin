@@ -1,0 +1,22 @@
+{
+  "name": "decode-sourceplugin",
+  "private": true,
+  "version": "0.1.0",
+  "description": "DE.CO.DE Source Reliability Plugin - browser extension (Vite + Vue), data layer designed to plug into a Kirby CMS.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "vue": "^3.4.31"
+  },
+  "devDependencies": {
+    "@crxjs/vite-plugin": "^2.0.0-beta.31",
+    "@types/chrome": "^0.0.269",
+    "@vitejs/plugin-vue": "^5.0.5",
+    "typescript": "^5.5.3",
+    "vite": "^5.3.4"
+  }
+}
