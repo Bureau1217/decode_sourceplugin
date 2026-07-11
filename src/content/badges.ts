@@ -7,7 +7,18 @@ function normalizeDomain(hostname: string) {
   return hostname.replace(/^www\./i, "").toLowerCase();
 }
 
-function tierClass(score: number | null) {
+// Prefer the workbook's own trust_level ("Very high"/"High"/"Medium"/"Low"/
+// "Very low"/"Unclear") so the badge colour always agrees with the
+// qualifier shown when the panel opens for the same source.
+function tierClass(entry: Source | null) {
+  const level = entry?.trust_level?.toLowerCase();
+  if (level) {
+    if (level === "very high" || level === "high") return "decode-badge--high";
+    if (level === "medium") return "decode-badge--medium";
+    if (level === "low" || level === "very low") return "decode-badge--low";
+    return "decode-badge--unknown";
+  }
+  const score = entry?.trust_score ?? null;
   if (score === null) return "decode-badge--unknown";
   if (score >= 70) return "decode-badge--high";
   if (score >= 40) return "decode-badge--medium";
@@ -16,7 +27,7 @@ function tierClass(score: number | null) {
 
 function createBadge(domain: string, entry: Source | null) {
   const badge = document.createElement("span");
-  badge.className = `decode-badge ${tierClass(entry ? entry.trust_score : null)}`;
+  badge.className = `decode-badge ${tierClass(entry)}`;
   badge.innerHTML = `${HEART_ICON}<span>${entry ? `${entry.trust_score}/100` : "no data"}</span>`;
   badge.title = entry
     ? `${entry.source_name} - click for details`

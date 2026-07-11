@@ -77,6 +77,17 @@
         </button>
       </section>
 
+      <section v-if="evidenceLinks.length" class="decode-panel__section">
+        <h3>Evidence</h3>
+        <ul class="decode-panel__evidence-list">
+          <li v-for="(link, i) in evidenceLinks" :key="i">
+            <a :href="link" target="_blank" rel="noopener noreferrer">{{
+              shortLink(link)
+            }}</a>
+          </li>
+        </ul>
+      </section>
+
       <section class="decode-panel__section">
         <h3>Community evaluation</h3>
         <div class="decode-panel__community-row">
@@ -150,7 +161,18 @@ const barWidth = computed(() => {
   return `${clamped}%`;
 });
 
+// The workbook already assigns a trust_level ("Very high" / "High" /
+// "Medium" / "Low" / "Very low" / "Unclear") per source - use that
+// directly rather than re-deriving our own wording, and fall back to the
+// numeric score only for sources that somehow don't have one.
 const tierClass = computed(() => {
+  const level = props.source?.trust_level?.toLowerCase();
+  if (level) {
+    if (level === "very high" || level === "high") return "is-high";
+    if (level === "medium") return "is-medium";
+    if (level === "low" || level === "very low") return "is-low";
+    return "is-unknown";
+  }
   const score = props.source?.trust_score ?? null;
   if (score === null) return "is-unknown";
   if (score >= 70) return "is-high";
@@ -159,6 +181,7 @@ const tierClass = computed(() => {
 });
 
 const qualifier = computed(() => {
+  if (props.source?.trust_level) return props.source.trust_level;
   const score = props.source?.trust_score ?? null;
   if (score === null) return "Not yet rated";
   if (score >= 80) return "Highly reliable";
@@ -179,6 +202,16 @@ const related = computed(() => {
   if (!props.source) return [];
   return relatedSources(allSources.value, props.source);
 });
+
+const evidenceLinks = computed(() => props.source?.authority_sources ?? []);
+
+function shortLink(url: string) {
+  try {
+    return new URL(url).hostname.replace(/^www\./i, "");
+  } catch {
+    return url;
+  }
+}
 
 const agreeCount = computed(() => {
   const base = props.source?.validated_count ?? 0;

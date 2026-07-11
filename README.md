@@ -46,11 +46,14 @@ Then, to load it in the browser:
 2. Clicking a badge opens the **DE.CO.DE side panel** — a Vue component tree
    mounted once inside a shadow root (`src/content/App.vue` /
    `components/SidePanel.vue`), isolated from Google's own styles. It shows:
-   - the source name/domain, trust score, a progress bar, and a short
-     qualitative label (e.g. "Highly reliable", "Mixed reliability",
-     "Unreliable") next to the score
-   - the written analysis, plus a "see more relevant sources on this
-     subject" link when other sources share the same `topic` tag
+   - the source name/domain, trust score, a progress bar, and the
+     workbook's own `trust_level` label ("Very high", "High", "Medium",
+     "Low", "Very low") next to the score - badge colour and qualifier
+     always agree since both read the same field
+   - the written analysis, an "Evidence" list of links (from
+     `authority_sources`) backing the score, and a "see more relevant
+     sources on this subject" link when other sources share the same
+     `topic` tag
    - community agree/disagree counts, with a compact `+`/`−` control
      (rather than two full-width buttons) to record your own vote
    - an "i" info button in the header that expands a short explanation of
@@ -95,29 +98,66 @@ decode_sourceplugin/
 
 ## Reliability database (schema)
 
-One row = one source. Right now this lives in `public/data/sources.json`,
-shaped like a Kirby API response envelope on purpose (see below):
+One row = one source, in `public/data/sources.json` (wrapped in a
+Kirby-style API envelope — see below). The current data comes from the
+**DECODE Project 3 workbook**
+(`DECODE_Project_3_Source_Reliability_Plugin.xlsx`, "Source Database - To
+fill" sheet) — 99 sources, converted with `/tmp/transform.py`-style logic
+(sanitized domains, parsed evidence URLs). See "Importing from the
+workbook" below for how to re-run this when the sheet is updated.
 
-| Field                     | Type            | Example                                                                                     |
-| -------------------------- | --------------- | -------------------------------------------------------------------------------------------- |
-| `source_name`               | Text            | `Le Temps`                                                                                     |
-| `source_domain`             | Text / domain   | `letemps.ch`                                                                                   |
-| `trust_score`               | Number (0–100)  | `80`                                                                                            |
-| `trust_score_explanation`   | Text            | `Reliable newspaper with professional editorial standards, but still requires article-level verification.` |
-| `validated_count`           | Number          | `126`                                                                                           |
-| `invalidated_count`         | Number          | `18`                                                                                            |
-| `topic` *(added, optional)* | Text            | `climate`                                                                                       |
+| Field                       | Type            | Notes                                                                 |
+| ---------------------------- | --------------- | ---------------------------------------------------------------------- |
+| `source_name`                 | Text            | —                                                                       |
+| `source_domain`               | Text / domain   | Cleaned: no `https://`, no `www.`, no path                              |
+| `source_type`                 | Text            | e.g. "News organisation", "Public broadcaster", "Satirical source"      |
+| `country_or_region`           | Text            | —                                                                       |
+| `language`                    | Text            | —                                                                       |
+| `topic`                       | Text            | From the sheet's `topic_area` column - powers "see more relevant sources on this subject" |
+| `trust_score`                 | Number (0–100)  | From the sheet's `trust_score_100` (already normalised)                 |
+| `trust_score_raw`             | Number          | The raw per-scale score before normalisation                           |
+| `score_scale`                 | Text            | e.g. "5-point" - all current rows use this                              |
+| `trust_level`                 | Text            | "Very high" / "High" / "Medium" / "Low" / "Very low" / "Unclear" - drives badge colour and the panel's qualifier label |
+| `trust_score_explanation`     | Text            | Shown in the panel's Analysis section                                  |
+| `editorial_standards`, `transparency`, `correction_policy`, `ownership_funding`, `bias_notes` | Text | Evaluation evidence fields from the sheet; shown on the options page, not the compact panel |
+| `authority_sources`           | Text[]          | Parsed from the sheet's space/line-separated URL list; rendered as links in the panel's Evidence section |
+| `last_checked_date`           | Text (ISO date) | —                                                                       |
+| `status`, `source_id`, `student_owner` | Text  | Workbook bookkeeping, not shown in the extension UI                     |
+| `validated_count`, `invalidated_count` | Number | Not in this workbook (no Participatory Feedback sheet in this version) - seeded at 0, since votes are tracked locally by the extension anyway |
 
-Scores can be assigned by the team according to documented criteria, or
-derived from a cross-check of existing authority sources / media rankings /
-fact-checking databases (NewsGuard, MBFC, IFCN signatories, etc.). Keep
-criteria consistent so scores stay comparable across the dataset.
+### Importing from the workbook
 
-`topic` isn't part of the original 3.1 spec — it was added to power the
-"see more relevant sources on this subject" link in the side panel (see
-`relatedSources()` in `src/api/sources.ts`). It's a loose free-text tag for
-now; once the Kirby CMS exists this would more naturally become a real
-taxonomy the team manages there.
+Re-run `python3 scripts/import_from_xlsx.py path/to/workbook.xlsx` whenever
+the sheet is updated - it regenerates `public/data/sources.json` from
+scratch (sheet `Source Database - To fill`, header row 5, data from row 6).
+What it does:
+
+1. Read rows where any cell is non-empty; skip rows with no `source_domain`.
+2. Clean `source_domain`: strip `http(s)://`, strip leading `www.`, cut
+   anything from the first `/` onward, lowercase.
+3. Parse `authority_sources` by splitting on whitespace and keeping tokens
+   that start with `http` (a few rows have two URLs space-separated with no
+   other delimiter).
+4. Map `topic_area` → `topic`, `trust_score_100` → `trust_score`, keep the
+   rest close to the sheet's own column names.
+
+**QA notes from the current import** (99 of 100 rows made it in):
+- `SRC_098` was skipped — no `source_domain` filled in, so the plugin has
+  no way to match it to a search result. Worth fixing in the sheet and
+  re-importing.
+- 20 domains had a protocol/`www.`/path that got stripped automatically
+  (e.g. `www.jstor.org` → `jstor.org`, `blick.ch/fr/` → `blick.ch`) — no
+  action needed, just noting the sheet isn't 100% clean yet.
+- 2 rows (`SRC_005`, `SRC_008`) are still marked `To verify` rather than
+  `Ready` in the `status` column but were imported anyway; worth a look
+  before this goes further.
+- 1 row (`SRC_006`) had no `trust_score_explanation` — a placeholder string
+  was substituted so the panel doesn't show blank text.
+- No duplicate domains, no out-of-range scores.
+
+Scores follow the workbook's own Scoring Rubric sheet (editorial standards,
+transparency, correction practice, evidence quality, news/opinion
+separation, disinformation risk) — kept as-is rather than re-derived.
 
 ## Kirby CMS integration (not built yet)
 

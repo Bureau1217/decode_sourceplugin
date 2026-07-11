@@ -1,16 +1,39 @@
+/**
+ * Matches the "Source Database - To fill" sheet of the DECODE Project 3
+ * workbook (DECODE_Project_3_Source_Reliability_Plugin.xlsx). trust_score
+ * here is the normalised 0-100 value (the sheet's `trust_score_100`
+ * column) - the raw per-scale score is kept as `trust_score_raw` for
+ * reference. `topic` maps to the sheet's `topic_area` column.
+ */
 export interface Source {
+  source_id?: string;
   source_name: string;
   source_domain: string;
+  source_type?: string;
+  country_or_region?: string;
+  language?: string;
   trust_score: number;
+  trust_score_raw?: number;
+  score_scale?: string;
+  trust_level?: string;
   trust_score_explanation: string;
+  editorial_standards?: string;
+  transparency?: string;
+  correction_policy?: string;
+  ownership_funding?: string;
+  bias_notes?: string;
+  authority_sources?: string[];
+  last_checked_date?: string;
+  status?: string;
+  student_owner?: string;
   validated_count: number;
   invalidated_count: number;
   /**
    * Not part of the original 3.1 database spec - added to power the
    * "see more relevant sources on this subject" link in the side panel.
-   * A loose topic tag (e.g. "climate", "news", "satire"). Once the Kirby
-   * CMS exists this would likely become a real taxonomy/tag field the
-   * team manages there instead of a free string.
+   * Maps to the workbook's `topic_area` column (e.g. "General news",
+   * "Politics", "Economy"). Once the Kirby CMS exists this would likely
+   * become a real taxonomy/tag field the team manages there.
    */
   topic?: string;
 }

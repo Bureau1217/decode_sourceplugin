@@ -220,6 +220,25 @@
   text-decoration: underline;
 }
 
+.decode-panel__evidence-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.decode-panel__evidence-list a {
+  font-size: 12px;
+  color: var(--decode-ink-soft);
+  text-decoration: none;
+  border-bottom: 1px solid var(--decode-border);
+}
+.decode-panel__evidence-list a:hover {
+  color: var(--decode-ink);
+  border-color: var(--decode-ink-soft);
+}
+
 .decode-panel__community-row {
   display: flex;
   align-items: center;
