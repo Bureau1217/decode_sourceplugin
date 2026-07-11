@@ -124,6 +124,23 @@ is already set up for a clean handoff:
   cross-user tally will also need a small write-side API once the CMS/
   backend exists — out of scope here too.
 
+## Distribution
+
+Two paths, not mutually exclusive:
+
+- **Zip + load unpacked** — run `npm run build`, zip the `dist/` folder
+  (contents at the zip root, not nested in a `dist/` subfolder), and hand
+  it to testers. They unzip it, open `chrome://extensions`, enable
+  Developer mode, and click "Load unpacked" on the unzipped folder.
+  Available immediately, no review, no account.
+- **Chrome Web Store (unlisted)** — real one-click "Add to Chrome" install
+  for end users, no developer mode needed. Requires a one-time $5 Google
+  developer account and goes through Google's review (typically a few
+  business days). Draft listing copy, permissions justification, and a
+  privacy policy are in `store/LISTING.md` and `store/PRIVACY_POLICY.md` —
+  upload the same `dist/` zip as the package. Screenshots still need to be
+  captured from a real running instance of the extension.
+
 ## License
 
 No license specified — add one (e.g. MIT) if this project will be shared or
