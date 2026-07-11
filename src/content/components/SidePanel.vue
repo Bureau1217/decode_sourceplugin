@@ -3,14 +3,41 @@
     <aside v-if="visible" class="decode-panel">
       <header class="decode-panel__header">
         <h2>DE.CO.DE Plugin</h2>
-        <button
-          class="decode-panel__close"
-          aria-label="Close"
-          @click="$emit('close')"
-        >
-          &times;
-        </button>
+        <div class="decode-panel__header-actions">
+          <button
+            class="decode-panel__icon-btn"
+            :class="{ 'is-active': methodologyOpen }"
+            aria-label="How scores are calculated"
+            title="How scores are calculated"
+            @click="methodologyOpen = !methodologyOpen"
+          >
+            i
+          </button>
+          <button
+            class="decode-panel__icon-btn"
+            aria-label="Close"
+            @click="$emit('close')"
+          >
+            &times;
+          </button>
+        </div>
       </header>
+
+      <div v-if="methodologyOpen" class="decode-panel__methodology">
+        <strong>How this score is calculated</strong>
+        <p>
+          Scores combine editorial-standards checks, funding and ownership
+          transparency, and cross-checks against independent media
+          reliability databases. They are reviewed periodically, not
+          generated automatically.
+        </p>
+        <p>
+          A score is a starting point, not a verdict - always check the
+          individual article. Community Agree/Disagree votes are tracked
+          separately and shown alongside the score; they don't change it
+          automatically.
+        </p>
+      </div>
 
       <div class="decode-panel__source">
         <div class="decode-panel__name">
@@ -20,7 +47,12 @@
       </div>
 
       <div class="decode-panel__score-card">
-        <div class="decode-panel__score">{{ scoreLabel }}</div>
+        <div class="decode-panel__score-row">
+          <div class="decode-panel__score">{{ scoreLabel }}</div>
+          <span class="decode-panel__qualifier" :class="tierClass">{{
+            qualifier
+          }}</span>
+        </div>
         <div class="decode-panel__score-label">Trust score</div>
         <div class="decode-panel__bar">
           <div
@@ -36,30 +68,45 @@
         <p v-for="(paragraph, i) in analysisParagraphs" :key="i">
           {{ paragraph }}
         </p>
+        <button
+          v-if="related.length"
+          class="decode-panel__related-link"
+          @click="$emit('view-topic', source!.topic!)"
+        >
+          See more relevant sources on this subject &rarr;
+        </button>
       </section>
 
       <section class="decode-panel__section">
         <h3>Community evaluation</h3>
-        <div class="decode-panel__counts">
-          <span>{{ agreeCount.toLocaleString() }} agree</span>
-          <span>{{ disagreeCount.toLocaleString() }} disagree</span>
+        <div class="decode-panel__community-row">
+          <div class="decode-panel__counts">
+            <span>{{ agreeCount.toLocaleString() }} agree</span>
+            <span>{{ disagreeCount.toLocaleString() }} disagree</span>
+          </div>
+          <div class="decode-panel__vote-compact">
+            <button
+              class="decode-panel__vote-circle decode-panel__vote-circle--minus"
+              :class="{ 'is-active': userVote === 'disagree' }"
+              :disabled="!source"
+              aria-label="I disagree with this score"
+              title="I disagree with this score"
+              @click="$emit('vote', 'disagree')"
+            >
+              &minus;
+            </button>
+            <button
+              class="decode-panel__vote-circle decode-panel__vote-circle--plus"
+              :class="{ 'is-active': userVote === 'agree' }"
+              :disabled="!source"
+              aria-label="I agree with this score"
+              title="I agree with this score"
+              @click="$emit('vote', 'agree')"
+            >
+              &plus;
+            </button>
+          </div>
         </div>
-        <button
-          class="decode-panel__vote-btn decode-panel__vote-btn--agree"
-          :class="{ 'is-active': userVote === 'agree' }"
-          :disabled="!source"
-          @click="$emit('vote', 'agree')"
-        >
-          Agree
-        </button>
-        <button
-          class="decode-panel__vote-btn decode-panel__vote-btn--disagree"
-          :class="{ 'is-active': userVote === 'disagree' }"
-          :disabled="!source"
-          @click="$emit('vote', 'disagree')"
-        >
-          Disagree
-        </button>
       </section>
 
       <hr class="decode-panel__divider" />
@@ -72,9 +119,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import type { Source } from "../../api/sources";
+import { computed, ref } from "vue";
+import { relatedSources, type Source } from "../../api/sources";
 import type { Vote } from "../votesState";
+import { allSources } from "../sourcesState";
 
 const props = defineProps<{
   visible: boolean;
@@ -87,7 +135,10 @@ defineEmits<{
   close: [];
   vote: [vote: "agree" | "disagree"];
   "view-database": [];
+  "view-topic": [topic: string];
 }>();
+
+const methodologyOpen = ref(false);
 
 const scoreLabel = computed(() =>
   props.source ? `${props.source.trust_score}/100` : "No data"
@@ -107,11 +158,26 @@ const tierClass = computed(() => {
   return "is-low";
 });
 
+const qualifier = computed(() => {
+  const score = props.source?.trust_score ?? null;
+  if (score === null) return "Not yet rated";
+  if (score >= 80) return "Highly reliable";
+  if (score >= 70) return "Reliable";
+  if (score >= 40) return "Mixed reliability";
+  if (score >= 20) return "Low reliability";
+  return "Unreliable";
+});
+
 const analysisParagraphs = computed(() => {
   const text =
     props.source?.trust_score_explanation ??
     "This domain has not been evaluated yet. It is not in the reliability database.";
   return text.split("\n\n").filter(Boolean);
+});
+
+const related = computed(() => {
+  if (!props.source) return [];
+  return relatedSources(allSources.value, props.source);
 });
 
 const agreeCount = computed(() => {

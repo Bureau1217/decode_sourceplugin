@@ -7,6 +7,7 @@
     @close="closePanel"
     @vote="handleVote"
     @view-database="handleViewDatabase"
+    @view-topic="handleViewTopic"
   />
 </template>
 
@@ -25,5 +26,9 @@ function handleVote(vote: "agree" | "disagree") {
 
 function handleViewDatabase() {
   chrome.runtime.sendMessage({ type: "OPEN_OPTIONS" });
+}
+
+function handleViewTopic(topic: string) {
+  chrome.runtime.sendMessage({ type: "OPEN_OPTIONS", topic });
 }
 </script>

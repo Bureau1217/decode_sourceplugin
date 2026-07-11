@@ -5,6 +5,14 @@ export interface Source {
   trust_score_explanation: string;
   validated_count: number;
   invalidated_count: number;
+  /**
+   * Not part of the original 3.1 database spec - added to power the
+   * "see more relevant sources on this subject" link in the side panel.
+   * A loose topic tag (e.g. "climate", "news", "satire"). Once the Kirby
+   * CMS exists this would likely become a real taxonomy/tag field the
+   * team manages there instead of a free string.
+   */
+  topic?: string;
 }
 
 /**
@@ -39,4 +47,18 @@ export async function fetchSources(): Promise<Source[]> {
   const res = await fetch(url);
   const json = (await res.json()) as KirbyLikeResponse;
   return json.result?.data ?? [];
+}
+
+/**
+ * Other sources sharing the same topic tag, excluding the source itself.
+ * Used for the "see more relevant sources on this subject" link. This is a
+ * simple client-side filter for now - a real recommendation (by actual
+ * article subject rather than a coarse per-source tag) would need either a
+ * richer taxonomy from the CMS or a proper search index.
+ */
+export function relatedSources(all: Source[], current: Source): Source[] {
+  if (!current.topic) return [];
+  return all.filter(
+    (s) => s.topic === current.topic && s.source_domain !== current.source_domain
+  );
 }

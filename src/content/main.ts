@@ -5,6 +5,7 @@ import badgeStyles from "./badge.css?inline";
 import { fetchSources, type Source } from "../api/sources";
 import { injectBadges, injectBadgeStyles } from "./badges";
 import { loadVotes } from "./votesState";
+import { allSources } from "./sourcesState";
 
 // The side panel is rendered by Vue inside a shadow root, isolated from
 // Google's own styles. The inline badges next to each result stay as plain
@@ -38,6 +39,7 @@ async function init() {
   let domainIndex: Map<string, Source>;
   try {
     const sources = await fetchSources();
+    allSources.value = sources;
     domainIndex = new Map(
       sources.map((s) => [s.source_domain.toLowerCase(), s])
     );

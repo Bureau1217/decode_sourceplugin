@@ -45,16 +45,25 @@ Then, to load it in the browser:
    in the database.
 2. Clicking a badge opens the **DE.CO.DE side panel** — a Vue component tree
    mounted once inside a shadow root (`src/content/App.vue` /
-   `components/SidePanel.vue`), isolated from Google's own styles. It shows
-   the source name/domain, the trust score with a progress bar, the written
-   analysis, and the community Agree/Disagree counts and buttons.
+   `components/SidePanel.vue`), isolated from Google's own styles. It shows:
+   - the source name/domain, trust score, a progress bar, and a short
+     qualitative label (e.g. "Highly reliable", "Mixed reliability",
+     "Unreliable") next to the score
+   - the written analysis, plus a "see more relevant sources on this
+     subject" link when other sources share the same `topic` tag
+   - community agree/disagree counts, with a compact `+`/`−` control
+     (rather than two full-width buttons) to record your own vote
+   - an "i" info button in the header that expands a short explanation of
+     the scoring methodology and its limits (transparency panel)
 3. Votes are stored locally per-browser via `chrome.storage.local`
    (`src/content/votesState.ts`) and layered on top of the database's
    `validated_count` / `invalidated_count` when displaying totals. Nothing
    is sent to a server yet — see "Kirby CMS integration" below for what
    changes that.
 4. The toolbar popup (`src/popup`) toggles badges on/off and links to the
-   options page. The options page (`src/options`) lists the full database.
+   options page. The options page (`src/options`) lists the full database,
+   and can be opened pre-filtered to a topic (via the panel's related-
+   sources link, which passes `?topic=` in the URL).
 
 ## Project structure
 
@@ -97,11 +106,18 @@ shaped like a Kirby API response envelope on purpose (see below):
 | `trust_score_explanation`   | Text            | `Reliable newspaper with professional editorial standards, but still requires article-level verification.` |
 | `validated_count`           | Number          | `126`                                                                                           |
 | `invalidated_count`         | Number          | `18`                                                                                            |
+| `topic` *(added, optional)* | Text            | `climate`                                                                                       |
 
 Scores can be assigned by the team according to documented criteria, or
 derived from a cross-check of existing authority sources / media rankings /
 fact-checking databases (NewsGuard, MBFC, IFCN signatories, etc.). Keep
 criteria consistent so scores stay comparable across the dataset.
+
+`topic` isn't part of the original 3.1 spec — it was added to power the
+"see more relevant sources on this subject" link in the side panel (see
+`relatedSources()` in `src/api/sources.ts`). It's a loose free-text tag for
+now; once the Kirby CMS exists this would more naturally become a real
+taxonomy the team manages there.
 
 ## Kirby CMS integration (not built yet)
 

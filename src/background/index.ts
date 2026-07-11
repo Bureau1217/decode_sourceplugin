@@ -15,7 +15,17 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 });
 
 chrome.runtime.onMessage.addListener((message) => {
-  if (message?.type === "OPEN_OPTIONS") {
+  if (message?.type !== "OPEN_OPTIONS") return;
+
+  if (message.topic) {
+    // openOptionsPage() always opens the exact URL declared in the
+    // manifest with no way to pass a query string, so a topic filter
+    // needs a plain tab instead.
+    const url = `${chrome.runtime.getURL("src/options/index.html")}?topic=${encodeURIComponent(
+      message.topic
+    )}`;
+    chrome.tabs.create({ url });
+  } else {
     chrome.runtime.openOptionsPage();
   }
 });

@@ -45,17 +45,51 @@
   margin: 0;
 }
 
-.decode-panel__close {
+.decode-panel__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.decode-panel__icon-btn {
   border: none;
   background: transparent;
-  font-size: 20px;
+  font-size: 16px;
   line-height: 1;
   color: var(--decode-grey);
   cursor: pointer;
-  padding: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
 }
-.decode-panel__close:hover {
+.decode-panel__icon-btn:hover {
   color: var(--decode-ink);
+  background: var(--decode-grey-light);
+}
+.decode-panel__icon-btn.is-active {
+  color: var(--decode-ink);
+  background: var(--decode-grey-light);
+}
+
+.decode-panel__methodology {
+  background: var(--decode-grey-light);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--decode-ink-soft);
+}
+.decode-panel__methodology strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--decode-ink);
+  font-size: 12px;
+}
+.decode-panel__methodology p {
+  margin: 0 0 8px;
+}
+.decode-panel__methodology p:last-child {
+  margin-bottom: 0;
 }
 
 .decode-panel__source {
@@ -83,10 +117,41 @@
   margin-bottom: 20px;
 }
 
+.decode-panel__score-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
 .decode-panel__score {
   font-size: 32px;
   font-weight: 700;
   line-height: 1;
+}
+
+.decode-panel__qualifier {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+.decode-panel__qualifier.is-high {
+  background: var(--decode-high-bg);
+  color: var(--decode-high-text);
+}
+.decode-panel__qualifier.is-medium {
+  background: var(--decode-medium-bg);
+  color: var(--decode-medium-text);
+}
+.decode-panel__qualifier.is-low {
+  background: var(--decode-low-bg);
+  color: var(--decode-low-text);
+}
+.decode-panel__qualifier.is-unknown {
+  background: var(--decode-unknown-bg);
+  color: var(--decode-unknown-text);
 }
 
 .decode-panel__score-label {
@@ -142,43 +207,71 @@
   margin-bottom: 0;
 }
 
-.decode-panel__counts {
-  display: flex;
-  gap: 16px;
-  font-size: 12px;
-  color: var(--decode-grey);
-  margin-bottom: 12px;
-}
-
-.decode-panel__vote-btn {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--decode-border);
-  background: var(--decode-grey-light);
+.decode-panel__related-link {
+  border: none;
+  background: transparent;
+  padding: 0;
   font-size: 13px;
   font-weight: 600;
+  color: var(--decode-high-text);
   cursor: pointer;
-  margin-bottom: 8px;
+}
+.decode-panel__related-link:hover {
+  text-decoration: underline;
 }
 
-.decode-panel__vote-btn--agree {
+.decode-panel__community-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.decode-panel__counts {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+  color: var(--decode-grey);
+}
+
+.decode-panel__vote-compact {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.decode-panel__vote-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.decode-panel__vote-circle--plus {
   background: var(--decode-high-bg);
   color: var(--decode-high-text);
-  border-color: var(--decode-high-border);
+  border: 1px solid var(--decode-high-border);
 }
-.decode-panel__vote-btn--agree.is-active {
+.decode-panel__vote-circle--plus.is-active {
   background: var(--decode-high-solid);
   border-color: var(--decode-high-solid);
   color: #ffffff;
 }
 
-.decode-panel__vote-btn--disagree {
+.decode-panel__vote-circle--minus {
   background: var(--decode-low-bg);
   color: var(--decode-low-text);
-  border-color: var(--decode-low-border);
+  border: 1px solid var(--decode-low-border);
 }
-.decode-panel__vote-btn--disagree.is-active {
+.decode-panel__vote-circle--minus.is-active {
   background: var(--decode-low-solid);
   border-color: var(--decode-low-solid);
   color: #ffffff;
