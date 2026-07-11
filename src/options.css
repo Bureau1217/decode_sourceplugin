@@ -1,0 +1,47 @@
+body {
+  margin: 0;
+  font-family: arial, sans-serif;
+  color: #202124;
+  background: #fff;
+}
+
+.wrap {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+h1 {
+  font-size: 20px;
+}
+
+code {
+  background: #f1f3f4;
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  font-size: 13px;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid #e8eaed;
+  vertical-align: top;
+}
+
+th {
+  background: #f8f9fa;
+  font-weight: 600;
+}
+
+.score {
+  font-weight: 700;
+  white-space: nowrap;
+}

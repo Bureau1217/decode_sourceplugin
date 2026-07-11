@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Source Reliability Plugin</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="popup">
+      <h1>Source Reliability Plugin</h1>
+      <p class="subtitle">
+        Trust scores appear next to sources in your Google search results.
+      </p>
+
+      <label class="toggle-row">
+        <input type="checkbox" id="enabledToggle" />
+        <span>Show trust badges</span>
+      </label>
+
+      <div class="stat">
+        <span id="sourceCount">-</span> sources in the database
+      </div>
+
+      <button id="openOptions">View full source list</button>
+
+      <p class="footer-note">
+        Click a badge on Google to see the explanation, and to say whether you
+        agree or disagree with the score.
+      </p>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>
