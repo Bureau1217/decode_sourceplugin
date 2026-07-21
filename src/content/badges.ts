@@ -3,13 +3,61 @@ import { openPanel } from "./panelState";
 
 const HEART_ICON = `<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5S4 15.9 4 10.2C4 7.3 6.2 5 9 5c1.5 0 2.9.7 3.8 1.9C13.7 5.7 15.1 5 16.6 5c2.8 0 5 2.3 5 5.2 0 5.7-8 10.3-8 10.3z"/></svg>`;
 
+const OVERLAY_ID = "decode-badge-overlay";
+
+/**
+ * Badges are NOT inserted into Google's own result DOM. Google's SERP markup
+ * contains elements with their own CSS transforms (e.g. a flipped
+ * `transform: matrix(1,0,0,-1,0,0)` on some layout helper spans) that are
+ * invisible until something is nested inside them - a badge inserted inline
+ * inherited one of these and rendered upside down.
+ *
+ * Instead, each badge is an independent element appended to a dedicated
+ * overlay layer on `document.body`, positioned with `position: absolute`
+ * from the anchor's `getBoundingClientRect()`. This keeps the badge fully
+ * isolated from whatever Google's markup happens to do around the anchor.
+ */
+function getOverlay(): HTMLElement {
+  let overlay = document.getElementById(OVERLAY_ID);
+  if (!overlay) {
+    overlay = document.createElement("div");
+    overlay.id = OVERLAY_ID;
+    overlay.style.position = "absolute";
+    overlay.style.top = "0";
+    overlay.style.left = "0";
+    overlay.style.width = "0";
+    overlay.style.height = "0";
+    overlay.style.overflow = "visible";
+    document.body.appendChild(overlay);
+  }
+  return overlay;
+}
+
+interface TrackedBadge {
+  anchor: HTMLElement;
+  badge: HTMLElement;
+}
+
+const tracked: TrackedBadge[] = [];
+
+function positionBadge(anchor: HTMLElement, badge: HTMLElement) {
+  const rect = anchor.getBoundingClientRect();
+  const top = rect.top + window.scrollY + rect.height / 2;
+  const left = rect.right + window.scrollX + 8;
+  badge.style.position = "absolute";
+  badge.style.top = `${top}px`;
+  badge.style.left = `${left}px`;
+  badge.style.transform = "translateY(-50%)";
+}
+
+export function repositionBadges() {
+  tracked.forEach(({ anchor, badge }) => positionBadge(anchor, badge));
+}
+
 function normalizeDomain(hostname: string) {
   return hostname.replace(/^www\./i, "").toLowerCase();
 }
 
-// Prefer the workbook's own trust_level ("Very high"/"High"/"Medium"/"Low"/
-// "Very low"/"Unclear") so the badge colour always agrees with the
-// qualifier shown when the panel opens for the same source.
 function tierClass(entry: Source | null) {
   const level = entry?.trust_level?.toLowerCase();
   if (level) {
@@ -28,10 +76,12 @@ function tierClass(entry: Source | null) {
 function createBadge(domain: string, entry: Source | null) {
   const badge = document.createElement("span");
   badge.className = `decode-badge ${tierClass(entry)}`;
-  badge.innerHTML = `${HEART_ICON}<span>${entry ? `${entry.trust_score}/100` : "no data"}</span>`;
+  badge.style.pointerEvents = "auto";
+  const label = entry ? `${entry.trust_score}/100` : "Rate this source";
+  badge.innerHTML = `${HEART_ICON}<span>${label}</span>`;
   badge.title = entry
     ? `${entry.source_name} - click for details`
-    : `${domain} is not in the reliability database yet`;
+    : `${domain} isn't in the reliability database yet - click to suggest a score`;
 
   badge.addEventListener("click", (e) => {
     e.preventDefault();
@@ -43,6 +93,9 @@ function createBadge(domain: string, entry: Source | null) {
 }
 
 export function injectBadges(domainIndex: Map<string, Source>) {
+  const overlay = getOverlay();
+  let addedNew = false;
+
   document.querySelectorAll("h3").forEach((h3) => {
     const el = h3 as HTMLElement;
     if (el.dataset.decodeProcessed) return;
@@ -61,10 +114,17 @@ export function injectBadges(domainIndex: Map<string, Source>) {
     const domain = normalizeDomain(hostname);
     const entry = domainIndex.get(domain) ?? null;
     const badge = createBadge(domain, entry);
-
-    const container = h3.parentElement ?? h3;
-    container.insertBefore(badge, h3.nextSibling);
+    overlay.appendChild(badge);
+    tracked.push({ anchor: el, badge });
+    positionBadge(el, badge);
+    addedNew = true;
   });
+
+  if (addedNew) {
+    // Positions of earlier badges can shift as later content
+    // (thumbnails, "top stories" carousels) finishes loading.
+    repositionBadges();
+  }
 }
 
 export function injectBadgeStyles(css: string) {

@@ -88,7 +88,7 @@
         </ul>
       </section>
 
-      <section class="decode-panel__section">
+      <section v-if="source" class="decode-panel__section">
         <h3>Community evaluation</h3>
         <div class="decode-panel__community-row">
           <div class="decode-panel__counts">
@@ -99,7 +99,6 @@
             <button
               class="decode-panel__vote-circle decode-panel__vote-circle--minus"
               :class="{ 'is-active': userVote === 'disagree' }"
-              :disabled="!source"
               aria-label="I disagree with this score"
               title="I disagree with this score"
               @click="$emit('vote', 'disagree')"
@@ -109,7 +108,6 @@
             <button
               class="decode-panel__vote-circle decode-panel__vote-circle--plus"
               :class="{ 'is-active': userVote === 'agree' }"
-              :disabled="!source"
               aria-label="I agree with this score"
               title="I agree with this score"
               @click="$emit('vote', 'agree')"
@@ -117,6 +115,32 @@
               &plus;
             </button>
           </div>
+        </div>
+      </section>
+
+      <section v-else class="decode-panel__section">
+        <h3>Suggest a trust score</h3>
+        <p v-if="mySuggestion" class="decode-panel__suggest-note">
+          You suggested {{ mySuggestion.score }}/100. Saved on this device
+          only - not yet reviewed by the team.
+        </p>
+        <p v-else class="decode-panel__suggest-note">
+          This domain isn't in the database yet. Your suggestion saves
+          locally on this device, as a starting point for the team to
+          review.
+        </p>
+        <input
+          v-model.number="draftScore"
+          type="range"
+          min="0"
+          max="100"
+          class="decode-panel__slider"
+        />
+        <div class="decode-panel__suggest-row">
+          <span class="decode-panel__suggest-score">{{ draftScore }}/100</span>
+          <button class="decode-panel__suggest-btn" @click="handleSuggest">
+            {{ mySuggestion ? "Update suggestion" : "Submit suggestion" }}
+          </button>
         </div>
       </section>
 
@@ -130,10 +154,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { relatedSources, type Source } from "../../api/sources";
 import type { Vote } from "../votesState";
 import { allSources } from "../sourcesState";
+import { suggestions, submitSuggestion } from "../suggestionsState";
 
 const props = defineProps<{
   visible: boolean;
@@ -222,4 +247,20 @@ const disagreeCount = computed(() => {
   const base = props.source?.invalidated_count ?? 0;
   return base + (props.userVote === "disagree" ? 1 : 0);
 });
+
+const mySuggestion = computed(() => suggestions[props.domain] ?? null);
+const draftScore = ref(mySuggestion.value?.score ?? 50);
+
+// Reset the slider to this domain's existing suggestion (or the 50/100
+// default) whenever a different badge is opened.
+watch(
+  () => props.domain,
+  () => {
+    draftScore.value = mySuggestion.value?.score ?? 50;
+  }
+);
+
+function handleSuggest() {
+  submitSuggestion(props.domain, draftScore.value);
+}
 </script>

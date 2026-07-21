@@ -3,13 +3,16 @@ import App from "./App.vue";
 import panelStyles from "./panel.css?inline";
 import badgeStyles from "./badge.css?inline";
 import { fetchSources, type Source } from "../api/sources";
-import { injectBadges, injectBadgeStyles } from "./badges";
+import { injectBadges, injectBadgeStyles, repositionBadges } from "./badges";
 import { loadVotes } from "./votesState";
+import { loadSuggestions } from "./suggestionsState";
 import { allSources } from "./sourcesState";
 
 // The side panel is rendered by Vue inside a shadow root, isolated from
-// Google's own styles. The inline badges next to each result stay as plain
-// DOM (see badges.ts) since they need to live inside Google's real markup.
+// Google's own styles. Badges are also independent of Google's own markup
+// (see badges.ts) - they're positioned overlay elements, not nodes inserted
+// into Google's result DOM, since that DOM contains elements with their own
+// CSS transforms that a naively-inserted child would inherit.
 function mountShadowApp() {
   const hostId = "decode-panel-host";
   if (document.getElementById(hostId)) return;
@@ -34,7 +37,7 @@ async function init() {
 
   injectBadgeStyles(badgeStyles);
   mountShadowApp();
-  await loadVotes();
+  await Promise.all([loadVotes(), loadSuggestions()]);
 
   let domainIndex: Map<string, Source>;
   try {
@@ -51,9 +54,18 @@ async function init() {
   injectBadges(domainIndex);
 
   // Google search results can load progressively, so keep watching for new
-  // result blocks and badge them too.
-  const observer = new MutationObserver(() => injectBadges(domainIndex));
+  // result blocks (and reposition existing badges, since late-loading
+  // thumbnails/carousels can shift anchors after the first paint).
+  const observer = new MutationObserver(() => {
+    injectBadges(domainIndex);
+    repositionBadges();
+  });
   observer.observe(document.body, { childList: true, subtree: true });
+
+  // Badges are position:absolute on document.body, so they already scroll
+  // correctly with the page - only resize (which reflows Google's layout)
+  // needs an explicit reposition.
+  window.addEventListener("resize", repositionBadges);
 }
 
 init();
