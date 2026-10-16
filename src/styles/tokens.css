@@ -32,4 +32,20 @@
   --decode-unknown-bg: #f1f3f4;
   --decode-unknown-text: #5f6368;
   --decode-unknown-border: #dadce0;
+
+  /*
+   * Side panel, matching the Source Reliability tool page of decode.website
+   * (same lavender accent as its --tool-sourcerel-* tokens, same Martian
+   * Mono / EB Garamond pairing). Fonts are bundled, see content/fonts.ts.
+   */
+  --decode-font-mono: "Martian Mono", ui-monospace, monospace;
+  --decode-font-serif: "EB Garamond", Garamond, Georgia, serif;
+  --decode-panel-ink: #3b382f;
+  --decode-panel-accent: #cdb4ea;
+  --decode-panel-accent-deep: #8a5fc7;
+  --decode-panel-tint: #f9f5ff;
+  --decode-panel-track: #dfd9d9;
+  --decode-panel-track-light: #f2f2f2;
+  --decode-panel-button: #f3efeb;
+  --decode-panel-rule: #b5b1ad;
 }

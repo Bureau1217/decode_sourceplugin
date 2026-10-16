@@ -43,5 +43,10 @@ export default defineManifest({
       resources: ["data/sources.json"],
       matches: ["https://www.google.com/*"],
     },
+    {
+      // Panel webfonts, declared on Google's page by content/fonts.ts.
+      resources: ["fonts/*.woff2"],
+      matches: ["https://www.google.com/*", "https://google.com/*"],
+    },
   ],
 });

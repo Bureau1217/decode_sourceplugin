@@ -5,7 +5,7 @@
         <h2>DE.CO.DE Plugin</h2>
         <div class="decode-panel__header-actions">
           <button
-            class="decode-panel__icon-btn"
+            class="decode-panel__icon-btn decode-panel__info-btn"
             :class="{ 'is-active': methodologyOpen }"
             aria-label="How scores are calculated"
             title="How scores are calculated"
@@ -18,7 +18,9 @@
             aria-label="Close"
             @click="$emit('close')"
           >
-            &times;
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M1 1 23 23M23 1 1 23" />
+            </svg>
           </button>
         </div>
       </header>
@@ -41,19 +43,21 @@
 
       <div class="decode-panel__source">
         <div class="decode-panel__name">
-          {{ source?.source_name ?? domain }}
+          {{ source?.source_name ?? domainName }}
         </div>
         <div class="decode-panel__domain">{{ domain }}</div>
       </div>
 
       <div class="decode-panel__score-card">
         <div class="decode-panel__score-row">
-          <div class="decode-panel__score">{{ scoreLabel }}</div>
+          <div>
+            <div class="decode-panel__score">{{ scoreLabel }}</div>
+            <div class="decode-panel__score-label">Trust score</div>
+          </div>
           <span class="decode-panel__qualifier" :class="tierClass">{{
             qualifier
           }}</span>
         </div>
-        <div class="decode-panel__score-label">Trust score</div>
         <div class="decode-panel__bar">
           <div
             class="decode-panel__bar-fill"
@@ -65,39 +69,43 @@
 
       <section class="decode-panel__section">
         <h3>Analysis</h3>
-        <p v-for="(paragraph, i) in analysisParagraphs" :key="i">
-          {{ paragraph }}
-        </p>
-        <button
-          v-if="related.length"
-          class="decode-panel__related-link"
-          @click="$emit('view-topic', source!.topic!)"
-        >
-          See more relevant sources on this subject &rarr;
-        </button>
+        <div class="decode-panel__section-body">
+          <p v-for="(paragraph, i) in analysisParagraphs" :key="i">
+            {{ paragraph }}
+          </p>
+          <button
+            v-if="related.length"
+            class="decode-panel__related-link"
+            @click="$emit('view-topic', source!.topic!)"
+          >
+            See more relevant sources on this subject &rarr;
+          </button>
+        </div>
       </section>
 
       <section v-if="evidenceLinks.length" class="decode-panel__section">
         <h3>Evidence</h3>
-        <ul class="decode-panel__evidence-list">
-          <li v-for="(link, i) in evidenceLinks" :key="i">
-            <a :href="link" target="_blank" rel="noopener noreferrer">{{
-              shortLink(link)
-            }}</a>
-          </li>
-        </ul>
+        <div class="decode-panel__section-body">
+          <ul class="decode-panel__evidence-list">
+            <li v-for="(link, i) in evidenceLinks" :key="i">
+              <a :href="link" target="_blank" rel="noopener noreferrer">{{
+                shortLink(link)
+              }}</a>
+            </li>
+          </ul>
+        </div>
       </section>
 
       <section v-if="source" class="decode-panel__section">
         <h3>Community evaluation</h3>
-        <div class="decode-panel__community-row">
+        <div class="decode-panel__section-body decode-panel__community-row">
           <div class="decode-panel__counts">
             <span>{{ agreeCount.toLocaleString() }} agree</span>
             <span>{{ disagreeCount.toLocaleString() }} disagree</span>
           </div>
           <div class="decode-panel__vote-compact">
             <button
-              class="decode-panel__vote-circle decode-panel__vote-circle--minus"
+              class="decode-panel__vote-square"
               :class="{ 'is-active': userVote === 'disagree' }"
               aria-label="I disagree with this score"
               title="I disagree with this score"
@@ -106,7 +114,7 @@
               &minus;
             </button>
             <button
-              class="decode-panel__vote-circle decode-panel__vote-circle--plus"
+              class="decode-panel__vote-square"
               :class="{ 'is-active': userVote === 'agree' }"
               aria-label="I agree with this score"
               title="I agree with this score"
@@ -120,35 +128,42 @@
 
       <section v-else class="decode-panel__section">
         <h3>Suggest a trust score</h3>
-        <p v-if="mySuggestion" class="decode-panel__suggest-note">
-          You suggested {{ mySuggestion.score }}/100. Saved on this device
-          only - not yet reviewed by the team.
-        </p>
-        <p v-else class="decode-panel__suggest-note">
-          This domain isn't in the database yet. Your suggestion saves
-          locally on this device, as a starting point for the team to
-          review.
-        </p>
-        <input
-          v-model.number="draftScore"
-          type="range"
-          min="0"
-          max="100"
-          class="decode-panel__slider"
-        />
-        <div class="decode-panel__suggest-row">
-          <span class="decode-panel__suggest-score">{{ draftScore }}/100</span>
-          <button class="decode-panel__suggest-btn" @click="handleSuggest">
-            {{ mySuggestion ? "Update suggestion" : "Submit suggestion" }}
-          </button>
+        <div class="decode-panel__section-body">
+          <p v-if="mySuggestion">
+            You suggested {{ mySuggestion.score }}/100. Saved on this device
+            only - not yet reviewed by the team.
+          </p>
+          <p v-else>
+            This domain isn't in the database yet. Your suggestion saves
+            locally on this device, as a starting point for the team to
+            review.
+          </p>
+          <input
+            v-model.number="draftScore"
+            type="range"
+            min="0"
+            max="100"
+            class="decode-panel__slider"
+            aria-label="Suggested trust score"
+            :style="{ '--fill': `${draftScore}%` }"
+          />
+          <div class="decode-panel__suggest-row">
+            <span class="decode-panel__suggest-score">{{ draftScore }}/100</span>
+            <button class="decode-panel__serif-btn" @click="handleSuggest">
+              {{ mySuggestion ? "Update suggestion" : "Submit suggestion" }}
+            </button>
+          </div>
         </div>
       </section>
 
-      <hr class="decode-panel__divider" />
-
-      <button class="decode-panel__view-db" @click="$emit('view-database')">
-        View full data base
-      </button>
+      <div class="decode-panel__footer">
+        <button
+          class="decode-panel__serif-btn decode-panel__serif-btn--accent"
+          @click="$emit('view-database')"
+        >
+          View full data base
+        </button>
+      </div>
     </aside>
   </transition>
 </template>
@@ -176,8 +191,15 @@ defineEmits<{
 
 const methodologyOpen = ref(false);
 
+// Unrated domains have no source_name: show the site's own name instead,
+// i.e. the label just before the TLD ("fr.wikipedia.org" -> "wikipedia").
+const domainName = computed(() => {
+  const labels = props.domain.split(".").filter(Boolean);
+  return labels.length > 1 ? labels[labels.length - 2] : props.domain;
+});
+
 const scoreLabel = computed(() =>
-  props.source ? `${props.source.trust_score}/100` : "No data"
+  props.source ? `${props.source.trust_score}/100` : "No Data"
 );
 
 const barWidth = computed(() => {

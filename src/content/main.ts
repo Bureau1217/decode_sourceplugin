@@ -7,6 +7,7 @@ import { injectBadges, injectBadgeStyles, repositionBadges } from "./badges";
 import { loadVotes } from "./votesState";
 import { loadSuggestions } from "./suggestionsState";
 import { allSources } from "./sourcesState";
+import { injectFonts } from "./fonts";
 
 // The side panel is rendered by Vue inside a shadow root, isolated from
 // Google's own styles. Badges are also independent of Google's own markup
@@ -36,6 +37,7 @@ async function init() {
   if (srp_enabled === false) return;
 
   injectBadgeStyles(badgeStyles);
+  injectFonts();
   mountShadowApp();
   await Promise.all([loadVotes(), loadSuggestions()]);
 
