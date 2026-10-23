@@ -1,12 +1,9 @@
 # Privacy policy — Source Reliability Plugin (DE.CO.DE)
 
-Last updated: 2026-07-11
+Last updated: 2026-10-23
 
-The Chrome Web Store requires a publicly reachable URL for this text (it
-cannot just live in the zip). Easiest options: paste this into a GitHub
-Pages / Notion / Google Doc "publish to web" link, or a page on your own
-site, then paste that URL into the "Privacy policy" field in the Developer
-Dashboard.
+Published at: https://bureau1217.github.io/decode_sourceplugin/
+(source: `docs/index.html` — keep both in sync)
 
 ## What this extension does
 
@@ -26,6 +23,7 @@ beyond google.com search result listings.
 
 - Whether badges are enabled (`chrome.storage.local`)
 - Your local agree/disagree votes, keyed by domain (`chrome.storage.local`)
+- Sources you suggest via "Rate this source" (`chrome.storage.local`)
 
 This data is stored locally in your browser only. It is not transmitted to
 any server, and the extension has no backend as of this version.

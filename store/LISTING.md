@@ -47,10 +47,11 @@ Store requires it uploaded separately as a square PNG.
 
 ## Screenshots (required: at least 1, 1280x800 or 640x400)
 
-Not yet captured. Easiest path: load the built `dist/` folder as an
-unpacked extension in Chrome, search something on google.com, click a
-badge to open the panel, and take a real screenshot at 1280x800. A staged
-screenshot (not a real running extension) will get flagged in review.
+Ready: `store/screenshots/01-search-badge.png` and `store/screenshots/02-side-panel.png` (1280x800).
+
+## Privacy policy URL
+
+https://bureau1217.github.io/decode_sourceplugin/
 
 ## Promotional images
 
